@@ -106,5 +106,5 @@ jobs:
           TARGET_GROUP_NAME_CLEAN="$(echo "$TARGET_GROUP_NAME" | tr -d '\r\n' | xargs)"
           TG_ARN=$(aws elbv2 describe-target-groups --names "$TARGET_GROUP_NAME_CLEAN" | jq -r '.TargetGroups[0].TargetGroupArn')
           echo "Target group ARN: $TG_ARN"
-          aws elbv2 describe-target-health --target-group-arn $TG_ARNwhat is the error this
+          aws elbv2 describe-target-health --target-group-arn "$TG_ARN"
           
