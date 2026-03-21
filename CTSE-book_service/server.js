@@ -14,11 +14,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.get('/health', (req, res) => {
+app.get('/booking/health', (req, res) => {
   res.json({ status: 'ok', service: 'book-service', timestamp: new Date().toISOString() });
 });
 
-app.use('/books', bookRoutes);
+app.use('/booking', bookRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
