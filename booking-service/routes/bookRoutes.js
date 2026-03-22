@@ -42,6 +42,6 @@ router.delete('/:id', protect, adminOnly, deleteBook);
 
 // Inventory management endpoints (called by order service during checkout)
 router.put('/:id/decrement', protect, decrementStock);
-router.put('/:id/restores', protect, restoreStock);
+router.put('/:id/restore', protect, restoreStock);
 
 module.exports = router;
