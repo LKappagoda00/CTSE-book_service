@@ -6,6 +6,8 @@ const {
   createBook,
   updateBook,
   deleteBook,
+  decrementStock,
+  restoreStock,
 } = require('../controllers/bookController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -31,10 +33,15 @@ const updateBookValidation = [
   body('image').optional().trim().notEmpty().withMessage('Image URL cannot be empty').isURL().withMessage('Image must be a valid URL'),
 ];
 
+
 router.get('/', getBooks);
 router.get('/:id', getBookById);
 router.post('/', protect, adminOnly, createBookValidation, createBook);
 router.put('/:id', protect, adminOnly, updateBookValidation, updateBook);
 router.delete('/:id', protect, adminOnly, deleteBook);
+
+// Inventory management endpoints (called by order service during checkout)
+router.put('/:id/decrement', protect, decrementStock);
+router.put('/:id/restore', protect, restoreStock);
 
 module.exports = router;

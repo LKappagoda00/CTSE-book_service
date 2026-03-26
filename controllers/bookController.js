@@ -131,10 +131,53 @@ const deleteBook = async (req, res, next) => {
   }
 };
 
+// Decrement stock for a book
+const decrementStock = async (req, res, next) => {
+  try {
+    const { quantity } = req.body;
+    if (!quantity || quantity < 1) {
+      throw createHttpError(400, 'Quantity must be at least 1');
+    }
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      throw createHttpError(404, 'Book not found');
+    }
+    if (book.stock < quantity) {
+      throw createHttpError(400, 'Not enough stock available');
+    }
+    book.stock -= quantity;
+    await book.save();
+    res.status(200).json({ success: true, message: 'Stock decremented', stock: book.stock });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Restore stock for a book
+const restoreStock = async (req, res, next) => {
+  try {
+    const { quantity } = req.body;
+    if (!quantity || quantity < 1) {
+      throw createHttpError(400, 'Quantity must be at least 1');
+    }
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      throw createHttpError(404, 'Book not found');
+    }
+    book.stock += quantity;
+    await book.save();
+    res.status(200).json({ success: true, message: 'Stock restored', stock: book.stock });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getBooks,
   getBookById,
   createBook,
   updateBook,
   deleteBook,
+  decrementStock,
+  restoreStock,
 };
