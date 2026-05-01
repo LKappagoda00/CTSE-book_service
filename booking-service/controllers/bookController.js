@@ -1,5 +1,8 @@
 const { validationResult } = require('express-validator');
+const axios = require('axios');
 const Book = require('../models/Book');
+
+const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:5003';
 
 const createHttpError = (statusCode, message) => {
   const error = new Error(message);
@@ -118,6 +121,24 @@ const deleteBook = async (req, res, next) => {
 
     if (!book) {
       throw createHttpError(404, 'Book not found');
+    }
+
+    try {
+      const response = await axios.get(`${ORDER_SERVICE_URL}/orders/book/${req.params.id}/exists`, {
+        headers: {
+          Authorization: req.headers.authorization,
+        },
+      });
+
+      if (response.data?.exists) {
+        throw createHttpError(409, 'Book cannot be deleted because it is used in an order');
+      }
+    } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
+      throw createHttpError(503, 'Unable to verify order references before deleting book');
     }
 
     await book.deleteOne();
